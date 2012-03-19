@@ -1,0 +1,61 @@
+ 	bring home the bacon BETA - USE AT OWN RISK
+	======== README =========
+	
+
+			FEATURES
+
+	Easy Snort rule managment trough a Web-based GUI
+	4 views: 
+		- Rule-view for rule managment
+		- Ruleset-view for ruleset managment
+		- Sensor-view for sensor managment
+		- Advanced-tuning-view for managment of thresholding and suppression rules
+
+	- Built in support for automatic rules downloading (Emerging threat, Sourcefire, and other custom sources)
+	- Built in support for keeping files like reference.config, classification.config and sid-msg.map updated
+	- Built in support for automatic distribution of rules and belonging files to sensors
+	- Built in support for reloading snort-rules on the sensor when distribution is finished
+	- Built in support for creating different rule-sets for different sensors 
+		- Supports rule and ruleset disabling/enabling
+		- Supports rule thresholding and suppression
+	- Supports local rules
+
+
+			FEATURES TO COME
+	
+	- SO-Rule support
+	- Possibility to create and edit custom rules in web-GUI
+	- User login
+	- Rule enable and disable log + possibility to write a comment
+	- Update and distribution running regulary without interaction from the user
+	- snort.conf support
+
+
+			COMMENTS
+
+	- The update script ignores rules that are already commented out in the .rules files. In other words these rules will never be included in the database.
+	- The update script uses SID as rule identification. If two rules have the same SID, the rule with the highest REV will be the one kept in the database. 
+	- The different sensor folders in the files_to_distribute directory is first created when the distribute.py script have been executed for the first time.
+	- All files in the root of the files_to_distribute directory will be distributed to all sensors, while the files in the folders will only be distributed to the respective sensor.
+	- The snort.conf file can manually be placed in the correct folder for automatic distribution.  
+
+
+			PREREQUISITES
+
+	- Python
+	- Tornado Web Server
+	- SQLite
+	- SSH and Rsync
+ 
+
+			INSTALL
+
+	1. vim config.py 
+	2. python install.py
+	3. python /web/web.py
+	
+	GUI will be found at http://<yourdomain>:8080
+
+	update.py and distribute.py can be started trough the GUI or manually in the command line. These scripts does NOT run without user interaction, it is therefore
+	recommended to configure these two script, by the way of for example cromtab, to be run atleast once a day, to keep rules updated on a regular basis. 
+	
