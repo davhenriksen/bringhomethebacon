@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>threshold.conf - readme</title>
+</head>
+<body>
+# Configure Thresholding and Suppression</br>
+# ======================================</br>
+#</br>
+# The threshold command is deprecated.  Use detection_filter for thresholds</br>
+# within a rule and event_filter for standalone threshold configurations.</br>
+# Please see README.filters for more information on filters.</br>
+#</br>
+# Thresholding:</br>
+#</br>
+# This feature is used to reduce the number of logged alerts for noisy rules.</br>
+# This can be tuned to significantly reduce false alarms, and it can also be</br>
+# used to write a newer breed of rules. Thresholding commands limit the number</br>
+# of times a particular event is logged during a specified time interval.</br>
+#</br>
+# There are 3 types of event_filters:</br>
+#</br>
+# 1) Limit</br>
+#    Alert on the 1st M events during the time interval, then ignore</br>
+#    events for the rest of the time interval.</br>
+#</br>
+# 2) Threshold</br>
+#    Alert every M times we see this event during the time interval.</br>
+#</br>
+# 3) Both</br>
+#    Alert once per time interval after seeing M occurrences of the</br>
+#    event, then ignore any additional events during the time interval.</br>
+#</br>
+# Threshold commands are formatted as:</br>
+#</br>
+# event_filter gen_id gen-id, sig_id sig-id, \</br>
+#     type limit|threshold|both, track by_src|by_dst, \</br>
+#     count n , seconds m</br>
+#</br>
+# Limit to logging 1 event per 60 seconds:</br>
+#</br>
+# event_filter gen_id 1, sig_id 1851, type limit, \</br>
+#     track by_src, count 1, seconds 60</br>
+# event_filter gen_id 1, sig_id 1851, type limit, \</br>
+#     track by_src, count 1, seconds 60</br>
+#</br>
+# Global Threshold - Limit to logging 1 event per 60 seconds per IP triggering</br>
+# each rule (rules are gen_id 1):</br>
+#</br>
+# event_filter gen_id 1, sig_id 0, type limit, track by_src, count 1, seconds 60</br>
+#</br>
+# Global Threshold - Limit to logging 1 event per 60 seconds per IP triggering</br>
+# any alert for any event generator:</br>
+#</br>
+# event_filter gen_id 0, sig_id 0, type limit, track by_src, count 1, seconds 60</br>
+#</br>
+# Suppression:</br>
+#</br>
+# Suppression commands are standalone commands that reference generators and</br>
+# sids and IP addresses via a CIDR block (or IP list). This allows a rule to be</br>
+# completely suppressed, or suppressed when the causitive traffic is going to</br>
+# or comming from a specific IP or group of IP addresses.</br>
+#</br>
+# Suppress this event completely:</br>
+#</br>
+# suppress gen_id 1, sig_id 1852</br>
+#</br>
+# Suppress this event from this IP:</br>
+#</br>
+# suppress gen_id 1, sig_id 1852, track by_src, ip 10.1.1.54</br>
+#</br>
+# Suppress this event to this CIDR block:</br>
+#</br>
+# suppress gen_id 1, sig_id 1852, track by_dst, ip 10.1.1.0/24</br>
+#</br>
+#</br>
+# Global event filter to limit events from a unique src to 1 in 60 seconds</br>
+# Disabled by default turn on if you want this functionality</br>
+#</br>
+#</br>
+# event_filter gen_id 0, sig_id 0, type limit, track by_src, count 1, seconds 60</br>
+</body>
+</html>

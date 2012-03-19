@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block head %}
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+                var oTable = $('#datatable').dataTable( {
+                        "bProcessing": true,
+                        "sAjaxSource": '/get_sensors',
+                        "bDeferRender": true,
+                        "bJQueryUI": true,
+                        "bPaginate": true,
+                        "sPaginationType": "full_numbers",
+                        "bStateSave": false,
+                        "bAutoWidth": false,
+                        "iDisplayLength": 10,
+                        "sDom": '<"header ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix"fr>t<"footer ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix"ipl>',
+                        "aaSorting": [[1,'asc']],
+                        "aoColumns":[
+                                { "bSearchable": false, "bSortable": false, "sWidth": "15px"},
+				null,
+                                { "bSearchable": false, "bSortable": false},
+                                { "bSearchable": false, "bSortable": false},
+				{ "bSearchable": false, "bSortable": false},
+				{ "bSearchable": false, "bSortable": false}
+                        ]
+                } );
+                new FixedHeader( oTable );
+                $("div.header").append('<span id="radio"><a class="removebutton">Remove selected</a>&nbsp<a class="addbutton">Add sensor</a>&nbsp<a class="updatebutton">Edit sensor</a></span>');
+                 
+		$(".removebutton").button().click(function() {
+                   	var sData = $('input', oTable.fnGetNodes()).serialize();
+                        $.post("/remove_sensor", sData,
+                        	function() {oTable.fnReloadAjax('/get_sensors');});
+              	});
+		$(".addbutton").button({icons: {primary: "ui-icon-newwin"}}).click(function() {
+			$('#add-dialog').dialog('open');
+		});
+		$("#add-dialog").dialog({
+                	autoOpen: false,
+                    	buttons: {
+                        	'Add sensor': function() { 
+                            		fData = $('#addform').serialize();
+					$.post("/add_sensor",fData,function(data) {
+						alert(data);
+					});
+					$(this).dialog('close');
+				}
+			}	
+		});		
+                $(".updatebutton").button({icons: {primary: "ui-icon-newwin"}}).click(function() {
+                        $('#edit-dialog').dialog('open');
+                });
+
+		$.get("/getsensorname",function(data) {
+                        $('#soptions').append(data);
+		});
+
+                $("#edit-dialog").dialog({
+                        autoOpen: false,
+                        buttons: {
+                                'Update sensor': function() {
+                                        fData = $('#editform').serialize();
+                                        $.post("/update_sensor",fData,function(data) {
+                                                alert(data);
+                                        });
+                                        $(this).dialog('close');
+                                }
+                        }
+                });
+
+	}); 
+</script>
+{% end %}
+{% block body %}
+	<div id="container">
+ 		<table width="100%" cellspacing="0" border="0" id="datatable">
+                        <thead>
+                                <tr>
+					<th></th>
+                                        <th>Sensor name</th>
+                                        <th>IP / Domain name</th>
+                                        <th>Path to rules dir.</th>
+                                        <th>User name</th>
+                                        <th>Reload rules command</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                </table>
+	</div>
+	<div id="add-dialog" title="Add sensor" style="display:none;">
+            	<form id="addform" method="post">
+            		<fieldset>
+                		<label for="sname">Sensor name*</label>		
+				</br>
+				<input type="text" name="sname" id="sname" class="text ui-widget-content ui-corner-all" />
+	                	</br>
+				<label for="ip">IP-adress OR domain name</label>
+				</br>
+                                <input type="text" name="ip" id="ip" class="text ui-widget-content ui-corner-all" />
+                                </br>
+				<label for="path">Path to rules directory**</label>
+				</br>
+                                <input type="text" name="path" id="path" class="text ui-widget-content ui-corner-all" />
+                                </br>
+				<label for="uname">Login username</label>
+				</br>
+                                <input type="text" name="uname" id="uname" class="text ui-widget-content ui-corner-all" />
+                                </br>
+				<label for="cmd">Command to reload rules***</label>
+				</br>
+                                <input type="text" name="cmd" id="cmd" class="text ui-widget-content ui-corner-all" />
+				</br></br>
+				<font color="red">Passwordless SSH must be configured (1. ssh-keygen 2. ssh-copy-id user@server) for this to work.</font>
+				</br></br>
+				* Sensor ID. Must be unique.
+				</br>
+				** Path must end with a trailing slash. 
+				</br>
+				*** Example: killall -HUP snort
+            		</fieldset>
+            	</form>
+	</div>	
+        <div id="edit-dialog" title="Edit sensor">
+                <form id="editform" method="post">
+                        <fieldset>
+				</br>
+                                <center><label for="sname">Edit sensor:</label>&nbsp<span id="soptions"></span>
+				</br>
+				Fields NOT left empty will be updated</center>
+				</br>
+                                <label for="ip">IP-adress OR domain name</label>
+                                </br>
+                                <input type="text" name="ip" id="ip" class="text ui-widget-content ui-corner-all" />
+                                </br>
+                                <label for="path">Path to rules directory*</label>
+                                </br>
+                                <input type="text" name="path" id="path" class="text ui-widget-content ui-corner-all" />
+                                </br>
+                                <label for="uname">Login username</label>
+                                </br>
+                                <input type="text" name="uname" id="uname" class="text ui-widget-content ui-corner-all" />
+                                </br>
+                                <label for="cmd">Command to reload rules</label>
+                                </br>
+                                <input type="text" name="cmd" id="cmd" class="text ui-widget-content ui-corner-all" />
+                                </br></br>
+                                * Path must end with a trailing slash.
+                        </fieldset>
+                </form>
+        </div>
+{% end %}
+
+

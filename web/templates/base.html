@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>bring home the bacon</title>
+
+		<script src="../static/js/jquery-1.7.1.min.js"></script>
+		<script src="../static/js/jquery.dataTables.js"></script>
+		<script src="../static/js/jquery-ui-1.8.17.custom.min.js"></script>
+		<script src="../static/js/FixedHeader.js"></script>
+		<script src="../static/js/datatable-plugins.js"></script>
+
+		<link type="text/css" rel="stylesheet" href="../static/css/custom.css"/>
+		<link type="text/css" rel="stylesheet" href="../static/css/demo_page.css"/>	
+		<link type="text/css" rel="stylesheet" href="../static/css/demo_table_jui.css"/>
+		<link type="text/css" rel="stylesheet" href="../static/css/smoothness/jquery-ui-1.8.17.custom.css"/>
+		
+		{% block head %}{% end %}
+	</head>
+	<body>
+		<div id="tbar">
+			<span id="tbar-left">
+				<a href="/rules">Rule-view</a>&nbsp|
+				<a href="/rulesets">Ruleset-view</a>&nbsp|
+				<a href="/sensors">Sensor-view</a>&nbsp|
+				<a href="/atuning">Adv.Tuning-view</a> 
+
+			</span>
+			<span id="tbar-right">
+				<a href="/distribute" target="_blank">Distribute signatures</a>&nbsp|
+				<a href="/update" target="_blank">Update rules</a>
+			</span>
+		</div>
+		</br>
+
+		{% block body %}{% end %}
+
+		</br></br>
+		<center>
+		<div id="footer">
+			bring home the bacon, a signature managment system for Snort</br>
+			Powered by: Python, Tornado, SQLite and jQuery</br></br>
+
+			bring home the bacon Copyright (C) 2012  David Ormbakken Henriksen</br>
+			This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.</br>
+    			This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</br>
+    			You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>
+		</div>
+		</center>
+		</br></br>
+	</body>
+</html>
+
+

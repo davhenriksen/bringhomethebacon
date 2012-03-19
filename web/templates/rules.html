@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block head %}
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function(){
+		var oTable = $('#dataTable').dataTable( {
+                	"bProcessing": true, 
+                	"sAjaxSource": '/get_rules',
+			"bDeferRender": true,
+			"bJQueryUI": true,
+			"bPaginate": true,
+			"sPaginationType": "full_numbers",
+                	"bStateSave": false,
+                	"bAutoWidth": false,
+			"iDisplayLength": 50,
+			"sDom": '<"header ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix"fr>t<"footer ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix"ipl>',
+			"aaSorting": [[3,'desc']],
+			"aoColumns":[
+                      	 	{ "bSearchable": false, "bSortable": false, "sWidth": "15px"},
+                      		{"sWidth": "60px"},
+				{ "bSearchable": false, "bSortable": false, "sWidth": "30px"},
+                      		{ "sWidth": "80px"},
+				null,
+                                null,
+                                { "bSearchable": false, "bSortable": false},
+                                { "bSearchable": false, "bSortable": false},
+                                { "bSearchable": false, "bSortable": false, "sWidth": "15px"}
+			]
+		}).fnSetFilteringDelay(1000);
+		new FixedHeader( oTable );
+		$('td img').live('click', function () {
+              		var nTr = this.parentNode.parentNode;
+                    	if (this.src.match('close')){
+                        	/* This row is already open - close it */
+                        	this.src = "static/images/open.png";
+                        	oTable.fnClose( nTr );
+                    	}
+                    	else {
+                        	/* Open this row */
+                        	row = oTable.fnGetData(nTr);
+                        	this.src = "/static/images/close.png";
+                        	$.get('/open_rule',{'sid':row[1]},function(data) {
+                            		oTable.fnOpen(nTr, data);
+                        	});
+                    	}
+                });
+		$.get("/getsensorname",function(data) {
+			$("div.header").append('<span id="radio"><input type="radio" id="radio1" name="choice" value="disable" checked="checked"/><label for="radio1">Disable</label><input type="radio" id="radio2" name="choice" value="enable" /><label for="radio2">Enable</label></span><span id="select1">selected ( <span id="options"></span> ), on sensor: </span><span id="select2>&nbsp',data,'&nbsp;<a class="submitbutton">Execute</a></span> OR use: <span id="atuning"></span>');
+			$("#thr-sensor").append(data);
+			$("#sup-sensor").append(data);
+		
+			$( "#radio" ).buttonset();
+
+			$(".submitbutton").button().click(function() {
+                        	var sData = $('input', oTable.fnGetNodes()).serialize();
+                        	var sensor = $('[name=select]').val();
+				var action = $('input[name=choice]:checked').val();
+                        	$.post("/tuning_rules", "sensor="+sensor+"&action="+action+"&"+sData,
+					function() {oTable.fnReloadAjax('/get_rules');});
+                	});
+
+			$("#options").append('<a class="selectall">Select All</a>');
+		
+			$(".selectall").button().click(function() {
+                    		$('input', oTable.fnGetDisplayNodes()).attr('checked','checked');
+			});
+
+			$("#options").append('<a class="deselectall">Select None</a>');
+		
+			$(".deselectall").button().click(function() {
+                    		$('input', oTable.fnGetDisplayNodes()).attr('checked',false);
+                	});
+
+			$("#atuning").append('<a class="thr">T..</a>&nbsp');
+			$("#atuning").append('<a class="sup">S..</a>');
+
+                	$(".thr").button({icons: {primary: "ui-icon-newwin"}}).click(function() {
+                        	$('#thr-dialog').dialog('open');
+                	});
+			$(".sup").button({icons: {primary: "ui-icon-newwin"}}).click(function() {
+                                $('#sup-dialog').dialog('open');
+                        });
+
+                	$("#thr-dialog").dialog({
+                        	autoOpen: false,
+                        	width: 750,
+                        	buttons: {
+                                	'Submit': function() {
+                                        	fData = $('#thrform').serialize();
+                                        	$.post("/threshold",fData,function(data) {
+                                                	alert(data);
+                                        	});
+                                        	$(this).dialog('close');
+                                	},
+                                	'Help': function() {
+                                        	window.open("/atuninghelp");
+                                	}
+                        	}
+                	});
+			$("#sup-dialog").dialog({
+                                autoOpen: false,
+                                width: 550,
+                                buttons: {
+                                        'Submit': function() {
+                                                fData = $('#supform').serialize();
+                                                $.post("/suppress",fData,function(data) {
+                                                        alert(data);
+                                                });
+                                                $(this).dialog('close');
+                                        },
+                                        'Help': function() {
+                                                window.open("/atuninghelp");
+                                        }
+                                }
+                        });
+
+		});
+
+	});		
+</script>
+{% end %}
+
+{% block body %}
+
+<div id="container">
+	<div id="header">
+		<div id="toolbar">
+		</div>
+		<table width="100%" cellspacing="0" border="0" id="dataTable">
+			<thead>
+				<tr>
+				<th></th>
+				<th>Sid</th>
+				<th>Rev</th>
+				<th>Added</th>
+				<th>Name</th>
+				<th>Source.Ruleset</th>
+                                <th>Reference</th>
+				<th>Status information</th>
+                                <th></th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div id="thr-dialog" title="Thresholding" style="display:none;">
+	<form id="thrform" method="post">
+		<fieldset>
+			event_filter&nbsp;<label for="genid">gen_id</label>
+                     	<input type="text" size="3" value="1" name="genid" id="genid" class="text ui-widget-content ui-corner-all" />
+			,&nbsp;
+			<label for="sigid">sig_id</label>
+			<input type="text" size="8" name="sigid" id="sigid" class="text ui-widget-content ui-corner-all" />
+			,&nbsp;
+			<label for="type">type</label>
+			<select name="type" id="type">
+				<option value="limit">limit</option>
+				<option value="threshold">threshold</option>
+				<option value="both">both</option>
+			</select>
+			,&nbsp;
+			<label for="track">track</label>
+			<select name="track" id="track">
+				<option value="by_src">by_src</option>
+				<option value="by_dst">by_dst</option>
+                        </select>
+			,&nbsp;
+			<label for="count">count</label>
+			<input type="text" size="3"  name="count" id="count" class="text ui-widget-content ui-corner-all" />
+			,&nbsp;
+			<label for="sec">seconds</label>
+			<input type="text" size="3"  name="sec" id="sec" class="text ui-widget-content ui-corner-all" />
+                	</br>
+                        <label for="select"></label>
+			</br>
+                        on sensor:&nbsp;
+                        <span id="thr-sensor"></span>
+                        &nbsp;
+                        <label for="comment">comment:</label>
+                        <input type="text" size="50" name="comment" id="comment" class="text ui-widget-content ui-corner-all" />
+		</fieldset>
+	</form>
+</div>
+<div id="sup-dialog" title="Suppression" style="display:none;">
+        <form id="supform" method="post">
+                <fieldset>
+			suppress&nbsp;
+			<label for="genid">gen_id</label>
+			<input type="text" size="3" value="1"  name="genid" id="genid" class="text ui-widget-content ui-corner-all" />
+			,&nbsp;
+			<label for="sigid">sig_id</label>
+			<input type="text" size="8" name="sigid" id="sigid" class="text ui-widget-content ui-corner-all" />
+			,&nbsp;
+			<label for="track">track</label>
+                        <select name="track" id="track">
+                                <option value="by_src">by_src</option>
+                                <option value="by_dst">by_dst</option>
+                        </select>
+			,&nbsp;
+			<label for="ip">ip</label>
+			<input type="text" size="15" name="ip" id="ip" class="text ui-widget-content ui-corner-all" />
+			</br>
+			<label for="select"></label>
+			</br>
+			on sensor:&nbsp;
+			<span id="sup-sensor"></span>
+			&nbsp;
+			<label for="comment">comment:</label>
+			<input type="text" size="50" name="comment" id="comment" class="text ui-widget-content ui-corner-all" />
+		</fieldset>
+	</form>
+</div>
+{% end %}
+
+
