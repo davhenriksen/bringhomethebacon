@@ -16,7 +16,7 @@ C_tmp_dir = ''
 # Example: '/home/user/bringhomethebacon/files_to distribute/'
 C_distribute_dir = ''
 
-# Specify path to sms folder. Must be full path and path and path must end with a trailing slash.
+# The db must be located in the root of bringhomethebacon directory. Must be full path and path must end with a trailing slash.
 # Example: '/home/user/bringhomethebacon/'
 C_db_path = ''+C_db_name
 
