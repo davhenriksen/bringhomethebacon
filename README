@@ -58,3 +58,5 @@ GUI will be found at http://<yourdomain>:8080
 
 update.py and distribute.py can be started trough the GUI or manually in the command line. These scripts does NOT run without user interaction, it is therefore recommended to configure these two script, by the way of for example cromtab, to be run atleast once a day, to keep rules updated on a regular basis. 
 	
+
+/ David Ormbakken Henriksen
